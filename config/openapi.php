@@ -1,4 +1,5 @@
 <?php
+
 return [
     "app_name" => "Your Laravel App API",
     "app_description" => "API documentation for your Laravel application.",

@@ -2,7 +2,6 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
-
 use IrealWorlds\OpenApi\Models\Document\OpenApiDocumentDto;
 
 class OpenApiDocumentService
