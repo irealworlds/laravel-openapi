@@ -12,15 +12,15 @@ class EndpointParameterDto implements JsonSerializable
      * @param RouteParameterLocation $in
      * @param string $name
      * @param SchemaPropertyDto|null $schema
-     * @param string $description
+     * @param string|null $description
      * @param bool $required
      */
     public function __construct(
         public RouteParameterLocation $in,
         public string $name,
         public SchemaPropertyDto|null  $schema = null,
-        public string $description = "",
-        public bool   $required = true
+        public string|null $description = null,
+        public bool   $required = true,
     ) {
     }
 
@@ -30,8 +30,8 @@ class EndpointParameterDto implements JsonSerializable
     public function jsonSerialize(): array
     {
         $data = [
-            "in" => $this->in->value,
             "name" => $this->name,
+            "in" => $this->in->value,
             "required" => $this->required,
         ];
 

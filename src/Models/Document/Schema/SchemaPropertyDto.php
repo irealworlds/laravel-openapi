@@ -8,6 +8,7 @@ class SchemaPropertyDto implements \JsonSerializable
         public string $type,
         public ?string $format = null,
         public ?bool $nullable = null,
+        public ?string $pattern = null,
     ) {
     }
 
@@ -20,7 +21,7 @@ class SchemaPropertyDto implements \JsonSerializable
             'type' => $this->type
         ];
 
-        foreach (['format', 'nullable'] as $property) {
+        foreach (['format', 'nullable', 'pattern'] as $property) {
             if ($this->{$property} !== null) {
                 $data[$property] = $this->{$property};
             }

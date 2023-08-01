@@ -4,11 +4,12 @@ namespace IrealWorlds\OpenApi\Models;
 
 use ReflectionType;
 
-readonly class RouteParameterDto
+class RouteParameterDto
 {
     public function __construct(
         public string  $name,
-        public ReflectionType $type
+        public ReflectionType $type,
+        public string|null $pattern = null
     ) {
     }
 }

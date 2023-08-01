@@ -48,11 +48,17 @@ readonly class RouteService
                     $parameters,
                     fn(ReflectionParameter $parameter) => in_array($parameter->getName(), $matches[1])
                 );
-                $routeParameters = array_map(function (ReflectionParameter $parameter) {
-                    return new RouteParameterDto(
+                $routeParameters = array_map(function (ReflectionParameter $parameter) use ($route) {
+                    $parameterDto = new RouteParameterDto(
                         $parameter->getName(),
                         $parameter->getType(),
                     );
+
+                    if (isset($route->wheres[$parameter->getName()])) {
+                        $parameterDto->pattern = $route->wheres[$parameter->getName()];
+                    }
+
+                    return $parameterDto;
                 }, $routeParameters);
 
                 $registeredRoutes[] = new RegisteredRouteDto(
