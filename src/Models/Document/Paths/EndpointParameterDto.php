@@ -22,7 +22,6 @@ readonly class EndpointParameterDto implements \JsonSerializable
     ) {
     }
 
-
     /**
      * @inheritDoc
      */
