@@ -3,12 +3,12 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Closure;
-use ReflectionMethod;
 use Illuminate\Routing\{Route, Router};
 use IrealWorlds\OpenApi\Models\{RegisteredRouteDto, RouteParameterDto};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
+use ReflectionMethod;
 use ReflectionParameter;
 
 readonly class RouteService
@@ -164,7 +164,7 @@ readonly class RouteService
             if ($comment !== false) {
 
                 // Remove comment delimiters (/* and */)
-                $comment = substr($comment, 3, -2);
+                $comment = mb_substr($comment, 3, -2);
 
                 // Remove leading and trailing whitespace
                 $comment = trim($comment);
