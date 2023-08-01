@@ -2,11 +2,8 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
-use Illuminate\Http\Request;
-use IrealWorlds\OpenApi\Models\RouteParameterDto;
 use Illuminate\Routing\{Route, RouteRegistrar, Router};
-use IrealWorlds\OpenApi\Models\RegisteredRouteDto;
-
+use IrealWorlds\OpenApi\Models\{RegisteredRouteDto, RouteParameterDto};
 readonly class RouteService
 {
     public function __construct(
