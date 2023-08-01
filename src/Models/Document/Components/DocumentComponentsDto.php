@@ -2,7 +2,6 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Components;
 
-
 class DocumentComponentsDto
 {
     /**

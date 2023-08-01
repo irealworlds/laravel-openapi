@@ -3,7 +3,6 @@
 namespace IrealWorlds\Tests;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Collection;
 use IrealWorlds\OpenApi\Providers\OpenApiServiceProvider;
 use Mockery;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
