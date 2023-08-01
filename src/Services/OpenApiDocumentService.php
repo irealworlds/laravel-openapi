@@ -3,14 +3,21 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
-use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto};
+use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto,
+    OpenApiDocumentDto,
+    Paths\EndpointParameterDto
+};
+use JsonException;
+use ReflectionException;
 
 readonly class OpenApiDocumentService
 {
     public function __construct(
         private ConfigRepository $_configuration,
-        private RouteService     $_routeService
+        private RouteService     $_routeService,
+        private SchemaService    $_schemaService
     ) {
     }
 
@@ -18,6 +25,7 @@ readonly class OpenApiDocumentService
      * Create a new {@link OpenApiDocumentDto} for the current application state.
      *
      * @return OpenApiDocumentDto
+     * @throws ReflectionException
      */
     public function createDocument(): OpenApiDocumentDto {
         // Create a new document
@@ -36,11 +44,26 @@ readonly class OpenApiDocumentService
                 continue;
             }
 
+            $endpoint = (new PathEndpointDto())
+                ->addTags(...$route->tags);
+
+            foreach ($route->parameters as $parameter) {
+                $parameterDto = new EndpointParameterDto(
+                    RouteParameterLocation::Path,
+                    $parameter->name,
+                );
+                $parameterDto->required = !$parameter->type->allowsNull();
+                $parameterDto->schema = $this->_schemaService->createFromType($parameter->type);
+                $parameterDto->schema->pattern = $parameter->pattern;
+                $parameterDto->schema->default = $parameter->defaultValue;
+
+                $endpoint->addParameter($parameterDto);
+            }
+
             $document->addPath(
                 $route->uri,
                 $route->method,
-                (new PathEndpointDto())
-                    ->addTags(...$route->tags)
+                $endpoint
             );
         }
 
@@ -48,7 +71,7 @@ readonly class OpenApiDocumentService
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function createJsonDocument(OpenApiDocumentDto $document, string $path): void
     {
