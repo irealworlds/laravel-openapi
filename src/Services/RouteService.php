@@ -2,10 +2,7 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
-use Illuminate\Routing\Route;
-use Illuminate\Routing\Router;
-use Illuminate\Routing\RouteRegistrar;
-use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
+use Illuminate\Routing\{Route, RouteRegistrar, Router};
 use IrealWorlds\OpenApi\Models\RegisteredRouteDto;
 
 readonly class RouteService
