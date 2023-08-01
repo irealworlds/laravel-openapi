@@ -3,9 +3,8 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use IrealWorlds\OpenApi\Models\Document\ApplicationInfoDto;
-use IrealWorlds\OpenApi\Models\Document\OpenApiDocumentDto;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
+use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto};
 
 readonly class OpenApiDocumentService
 {

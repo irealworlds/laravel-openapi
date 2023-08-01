@@ -2,7 +2,6 @@
 
 namespace IrealWorlds\OpenApi\Models\Document;
 
-use IrealWorlds\OpenApi\Models\Document\Components\DocumentComponentsDto;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\OpenApi;
 
