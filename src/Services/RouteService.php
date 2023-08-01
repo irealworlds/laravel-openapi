@@ -3,12 +3,12 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Closure;
+use Illuminate\Routing\{Route, Router};
+use IrealWorlds\OpenApi\Models\{RegisteredRouteDto};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionParameter;
-use Illuminate\Routing\{Route, Router};
-use IrealWorlds\OpenApi\Models\{RegisteredRouteDto};
 
 readonly class RouteService
 {
