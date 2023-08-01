@@ -5,13 +5,17 @@ namespace IrealWorlds\OpenApi\Services;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
-use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto};
+use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto,
+    OpenApiDocumentDto,
+    Paths\EndpointParameterDto,
+    Schema\SchemaPropertyDto};
 
 readonly class OpenApiDocumentService
 {
     public function __construct(
         private ConfigRepository $_configuration,
-        private RouteService     $_routeService
+        private RouteService     $_routeService,
+        private SchemaService    $_schemaService
     ) {
     }
 
@@ -41,12 +45,17 @@ readonly class OpenApiDocumentService
                 ->addTags(...$route->tags);
 
             foreach ($route->parameters as $parameter) {
-                $endpoint->addParameter(
-                    new EndpointParameterDto(
-                        RouteParameterLocation::Path,
-                        $parameter->name,
-                        required: $parameter->required)
+                $parameterDto = new EndpointParameterDto(
+                    RouteParameterLocation::Path,
+                    $parameter->getName(),
                 );
+
+                if ($type = $parameter->getType()) {
+                    $parameterDto->required = !$type->allowsNull();
+                    $parameterDto->schema = $this->_schemaService->createFromType($type);
+                }
+
+                $endpoint->addParameter($parameterDto);
             }
 
             $document->addPath(

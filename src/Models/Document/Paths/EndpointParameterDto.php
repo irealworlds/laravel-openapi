@@ -3,20 +3,22 @@
 namespace IrealWorlds\OpenApi\Models\Document\Paths;
 
 use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
+use IrealWorlds\OpenApi\Models\Document\Schema\SchemaPropertyDto;
+use JsonSerializable;
 
-readonly class EndpointParameterDto implements \JsonSerializable
+class EndpointParameterDto implements JsonSerializable
 {
     /**
-     * @param string $in
+     * @param RouteParameterLocation $in
      * @param string $name
-     * @param mixed $schema
+     * @param SchemaPropertyDto|null $schema
      * @param string $description
      * @param bool $required
      */
     public function __construct(
         public RouteParameterLocation $in,
         public string $name,
-        public mixed  $schema = "",
+        public SchemaPropertyDto|null  $schema = null,
         public string $description = "",
         public bool   $required = true
     ) {

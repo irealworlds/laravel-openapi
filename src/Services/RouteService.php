@@ -2,8 +2,14 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
-use Illuminate\Routing\{Route, RouteRegistrar, Router};
-use IrealWorlds\OpenApi\Models\{RegisteredRouteDto, RouteParameterDto};
+use Closure;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionFunction;
+use ReflectionParameter;
+use Illuminate\Routing\{Route, Router};
+use IrealWorlds\OpenApi\Models\{RegisteredRouteDto};
+
 readonly class RouteService
 {
     public function __construct(
@@ -15,6 +21,7 @@ readonly class RouteService
      * Get the routes currently known to the route registrar.
      *
      * @return array<RegisteredRouteDto>
+     * @throws ReflectionException
      */
     public function getRegisteredRoutes(): array {
         $registeredRoutes = [];
@@ -30,14 +37,23 @@ readonly class RouteService
                     $tags[] = $controller;
                 }
 
-                // Extract route parameters
-                $parameters = $this->getRouteParameters($route);
+                // Extract parameters defined in the action
+                $parameters = $this->getActionParameters($route);
+
+                // Extract only parameters that are defined in the route
+                $pattern = '/\/{([a-zA-Z_]+)(\??)}/';
+                $matches = [];
+                preg_match_all($pattern, $route->uri(), $matches);
+                $routeParameters = array_filter(
+                    $parameters,
+                    fn(ReflectionParameter $parameter) => in_array($parameter->getName(), $matches[1])
+                );
 
                 $registeredRoutes[] = new RegisteredRouteDto(
                     $route->uri(),
                     $method,
                     $tags,
-                    $parameters
+                    $routeParameters
                 );
             }
         }
@@ -71,20 +87,34 @@ readonly class RouteService
      * Get the parameters defined in a given route.
      *
      * @param Route $route
-     * @return array<RouteParameterDto>
+     * @return array<ReflectionParameter'>
+     * @throws ReflectionException
      */
-    protected function getRouteParameters(Route $route): array {
-        // TODO find a way to do this without regex
-        $parameters = [];
-        $uri = $route->uri();
-        preg_match_all('/\/{([a-zA-Z_]+)(\??)}/', $uri, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match) {
-            $parameterName = $match[1];
-            $isOptional = isset($match[2]) && $match[2] === '?';
+    protected function getActionParameters(Route $route): array {
 
-            $parameters[] = new RouteParameterDto($parameterName, !$isOptional);
+        if ($controller = $route->getAction('controller')) {
+            [$controller, $action] = explode('@', $controller);
+            $classReflection = new ReflectionClass($controller);
+            $methodReflection = $classReflection->getMethod($action);
+            return $methodReflection->getParameters();
+        } else if ($action = $route->getAction('uses')) {
+            if ($action instanceof Closure) {
+                $methodReflection = new ReflectionFunction($action);
+                return $methodReflection->getParameters();
+            }
+        } else if ($action = $route->getAction()) {
+            if (isset($action[0])) {
+                $controller = $action[0];
+                if (class_exists($controller)) {
+                    if (method_exists($controller, "__invoke")) {
+                        $classReflection = new ReflectionClass($controller);
+                        $methodReflection = $classReflection->getMethod("__invoke");
+                        return $methodReflection->getParameters();
+                    }
+                }
+            }
         }
 
-        return $parameters;
+        return [];
     }
 }
