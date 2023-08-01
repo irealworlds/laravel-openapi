@@ -7,11 +7,13 @@ use JsonSerializable;
 class PathEndpointDto implements JsonSerializable
 {
     /**
+     * @param string|null $summary
      * @param array<string> $tags
      * @param array<EndpointParameterDto> $parameters
      * @param array<string|int, EndpointResponseDto> $responses
      */
     public function __construct(
+        public string|null $summary = null,
         public array $tags = [],
         public array $parameters = [],
         public array $responses = [],
@@ -61,6 +63,10 @@ class PathEndpointDto implements JsonSerializable
             'tags' => $this->tags,
             'responses' => (object) $this->responses,
         ];
+
+        if (!empty($this->summary)) {
+            $data['summary'] = $this->summary;
+        }
 
         if (!empty($this->parameters)) {
             $data['parameters'] = $this->parameters;

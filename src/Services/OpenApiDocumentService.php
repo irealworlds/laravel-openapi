@@ -49,6 +49,10 @@ readonly class OpenApiDocumentService
             $endpoint = (new PathEndpointDto())
                 ->addTags(...$route->tags);
 
+            // Add summary
+            $endpoint->summary = $route->summary;
+
+            // Add parameters
             foreach ($route->parameters as $parameter) {
                 $parameterDto = new EndpointParameterDto(
                     RouteParameterLocation::Path,
