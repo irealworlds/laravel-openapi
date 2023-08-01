@@ -2,10 +2,10 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Paths;
 
-class EndpointResponseDto
+readonly class EndpointResponseDto
 {
     public function __construct(
-        public readonly string $description,
+        public string $description,
     ) {
     }
 }

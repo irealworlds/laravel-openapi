@@ -2,7 +2,9 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Paths;
 
-class PathEndpointDto
+use JsonSerializable;
+
+class PathEndpointDto implements JsonSerializable
 {
     /**
      * @param array<string> $tags
@@ -24,9 +26,27 @@ class PathEndpointDto
         return $this;
     }
 
+    /**
+     * Add a new possible response to this endpoint.
+     *
+     * @param string|int $statusCode
+     * @param EndpointResponseDto $response
+     * @return $this
+     */
     public function addResponse(string|int $statusCode, EndpointResponseDto $response): static
     {
         $this->responses[$statusCode] = $response;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'tags' => $this->tags,
+            'responses' => (object) $this->responses,
+        ];
     }
 }

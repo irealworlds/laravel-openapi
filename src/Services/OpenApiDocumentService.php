@@ -2,10 +2,47 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use IrealWorlds\OpenApi\Models\Document\ApplicationInfoDto;
 use IrealWorlds\OpenApi\Models\Document\OpenApiDocumentDto;
+use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 
-class OpenApiDocumentService
+readonly class OpenApiDocumentService
 {
+    public function __construct(
+        private ConfigRepository $_configuration,
+        private RouteService     $_routeService
+    ) {
+    }
+
+    /**
+     * Create a new {@link OpenApiDocumentDto} for the current application state.
+     *
+     * @return OpenApiDocumentDto
+     */
+    public function createDocument(): OpenApiDocumentDto {
+        // Create a new document
+        $document = new OpenApiDocumentDto(
+            new ApplicationInfoDto(
+                $this->_configuration->get('openapi.app_name'),
+                $this->_configuration->get('openapi.app_version'),
+                $this->_configuration->get('openapi.app_description'),
+            ),
+        );
+
+        // Add registered documents as paths to the document
+        foreach ($this->_routeService->getRegisteredRoutes() as $route) {
+            $document->addPath(
+                $route->uri,
+                $route->method,
+                (new PathEndpointDto())
+                    ->addTags(...$route->tags)
+            );
+        }
+
+        return $document;
+    }
+
     /**
      * @throws \JsonException
      */
