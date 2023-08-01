@@ -5,10 +5,7 @@ namespace IrealWorlds\OpenApi\Services;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
-use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto,
-    OpenApiDocumentDto,
-    Paths\EndpointParameterDto
-};
+use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto, ServerDto};
 use JsonException;
 use ReflectionException;
 
@@ -34,8 +31,13 @@ readonly class OpenApiDocumentService
                 $this->_configuration->get('openapi.app_name'),
                 $this->_configuration->get('openapi.app_version'),
                 $this->_configuration->get('openapi.app_description'),
-            ),
+            )
         );
+
+        // Add servers
+        foreach ($this->_configuration->get('openapi.servers') as $server) {
+            $document->addServer($server);
+        }
 
         // Add registered documents as paths to the document
         foreach ($this->_routeService->getRegisteredRoutes() as $route) {
