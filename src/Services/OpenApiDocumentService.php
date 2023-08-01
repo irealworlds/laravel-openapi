@@ -6,7 +6,6 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto, ServerDto};
-use IrealWorlds\OpenApi\OpenApi;
 use JsonException;
 use ReflectionException;
 
