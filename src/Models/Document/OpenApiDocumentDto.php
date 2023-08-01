@@ -4,17 +4,20 @@ namespace IrealWorlds\OpenApi\Models\Document;
 
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\OpenApi;
+use JsonSerializable;
 
-class OpenApiDocumentDto
+class OpenApiDocumentDto implements JsonSerializable
 {
     public readonly string $openapi;
 
     /**
      * @param ApplicationInfoDto $info
+     * @param array<ServerDto> $servers
      * @param array<string, array<string, PathEndpointDto>> $paths
      */
     public function __construct(
         public ApplicationInfoDto $info,
+        public array $servers = [],
         public array $paths = [],
     ) {
         $this->openapi = OpenApi::Version;
@@ -58,5 +61,28 @@ class OpenApiDocumentDto
         $this->paths[$path][$method] = $endpoint;
 
         return $this;
+    }
+
+    /**
+     * Add a new server definition to this document.
+     *
+     * @param ServerDto $server
+     * @return static
+     */
+    public function addServer(ServerDto $server): static
+    {
+        $this->servers[] = $server;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): array
+    {
+        // Filter out properties with empty arrays
+        return array_filter(get_object_vars($this), function ($value) {
+            return !is_array($value) || !empty($value);
+        });
     }
 }
