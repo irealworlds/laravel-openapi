@@ -1,0 +1,25 @@
+{
+    "name": "irealworlds/laravel-openapi",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "IrealWorlds\\OpenApi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Marin Calin",
+            "email": "marincalin2551@hotmail.com"
+        }
+    ],
+    "require": {
+        "illuminate/support": "^10.17"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\IrealWorlds\\OpenApi\\Providers\\OpenApiServiceProvider"
+            ]
+        }
+    }
+}
