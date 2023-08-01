@@ -3,8 +3,9 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
-use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto};
+use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto};
 
 readonly class OpenApiDocumentService
 {
@@ -36,11 +37,22 @@ readonly class OpenApiDocumentService
                 continue;
             }
 
+            $endpoint = (new PathEndpointDto())
+                ->addTags(...$route->tags);
+
+            foreach ($route->parameters as $parameter) {
+                $endpoint->addParameter(
+                    new EndpointParameterDto(
+                        RouteParameterLocation::Path,
+                        $parameter->name,
+                        required: $parameter->required)
+                );
+            }
+
             $document->addPath(
                 $route->uri,
                 $route->method,
-                (new PathEndpointDto())
-                    ->addTags(...$route->tags)
+                $endpoint
             );
         }
 

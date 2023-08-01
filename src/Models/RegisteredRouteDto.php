@@ -10,11 +10,13 @@ readonly class RegisteredRouteDto
      * @param string $uri
      * @param string $method
      * @param array<string> $tags
+     * @param array<RouteParameterDto> $parameters
      */
     public function __construct(
         public string $uri,
         public string $method,
         public array $tags = [],
+        public array $parameters = [],
     ) {
     }
 }

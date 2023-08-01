@@ -8,10 +8,12 @@ class PathEndpointDto implements JsonSerializable
 {
     /**
      * @param array<string> $tags
+     * @param array<EndpointParameterDto> $parameters
      * @param array<string|int, EndpointResponseDto> $responses
      */
     public function __construct(
         public array $tags = [],
+        public array $parameters = [],
         public array $responses = [],
     ) {
     }
@@ -40,13 +42,30 @@ class PathEndpointDto implements JsonSerializable
     }
 
     /**
+     * Add a new parameter to this endpoint definition.
+     *
+     * @param EndpointParameterDto $parameter
+     * @return $this
+     */
+    public function addParameter(EndpointParameterDto $parameter): static {
+        $this->parameters[] = $parameter;
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize(): array
     {
-        return [
+        $data = [
             'tags' => $this->tags,
             'responses' => (object) $this->responses,
         ];
+
+        if (!empty($this->parameters)) {
+            $data['parameters'] = $this->parameters;
+        }
+
+        return $data;
     }
 }
