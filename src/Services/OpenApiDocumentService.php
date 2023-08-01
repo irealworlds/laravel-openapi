@@ -7,8 +7,10 @@ use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto,
     OpenApiDocumentDto,
-    Paths\EndpointParameterDto,
-    Schema\SchemaPropertyDto};
+    Paths\EndpointParameterDto
+};
+use JsonException;
+use ReflectionException;
 
 readonly class OpenApiDocumentService
 {
@@ -23,6 +25,7 @@ readonly class OpenApiDocumentService
      * Create a new {@link OpenApiDocumentDto} for the current application state.
      *
      * @return OpenApiDocumentDto
+     * @throws ReflectionException
      */
     public function createDocument(): OpenApiDocumentDto {
         // Create a new document
@@ -47,13 +50,10 @@ readonly class OpenApiDocumentService
             foreach ($route->parameters as $parameter) {
                 $parameterDto = new EndpointParameterDto(
                     RouteParameterLocation::Path,
-                    $parameter->getName(),
+                    $parameter->name,
                 );
-
-                if ($type = $parameter->getType()) {
-                    $parameterDto->required = !$type->allowsNull();
-                    $parameterDto->schema = $this->_schemaService->createFromType($type);
-                }
+                $parameterDto->required = !$parameter->type->allowsNull();
+                $parameterDto->schema = $this->_schemaService->createFromType($parameter->type);
 
                 $endpoint->addParameter($parameterDto);
             }
@@ -69,7 +69,7 @@ readonly class OpenApiDocumentService
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function createJsonDocument(OpenApiDocumentDto $document, string $path): void
     {

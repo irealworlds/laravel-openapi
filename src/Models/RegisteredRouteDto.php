@@ -2,8 +2,6 @@
 
 namespace IrealWorlds\OpenApi\Models;
 
-use ReflectionParameter;
-
 readonly class RegisteredRouteDto
 {
     /**
@@ -12,7 +10,7 @@ readonly class RegisteredRouteDto
      * @param string $uri
      * @param string $method
      * @param array<string> $tags
-     * @param array<ReflectionParameter> $parameters
+     * @param array<RouteParameterDto> $parameters
      */
     public function __construct(
         public string $uri,

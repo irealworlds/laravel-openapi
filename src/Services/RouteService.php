@@ -4,7 +4,7 @@ namespace IrealWorlds\OpenApi\Services;
 
 use Closure;
 use Illuminate\Routing\{Route, Router};
-use IrealWorlds\OpenApi\Models\{RegisteredRouteDto};
+use IrealWorlds\OpenApi\Models\{RegisteredRouteDto, RouteParameterDto};
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -48,6 +48,12 @@ readonly class RouteService
                     $parameters,
                     fn(ReflectionParameter $parameter) => in_array($parameter->getName(), $matches[1])
                 );
+                $routeParameters = array_map(function (ReflectionParameter $parameter) {
+                    return new RouteParameterDto(
+                        $parameter->getName(),
+                        $parameter->getType(),
+                    );
+                }, $routeParameters);
 
                 $registeredRoutes[] = new RegisteredRouteDto(
                     $route->uri(),

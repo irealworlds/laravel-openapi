@@ -2,11 +2,13 @@
 
 namespace IrealWorlds\OpenApi\Models;
 
+use ReflectionType;
+
 readonly class RouteParameterDto
 {
     public function __construct(
         public string  $name,
-        public bool $required = true,
+        public ReflectionType $type
     ) {
     }
 }
