@@ -55,6 +55,7 @@ readonly class OpenApiDocumentService
                 $parameterDto->required = !$parameter->type->allowsNull();
                 $parameterDto->schema = $this->_schemaService->createFromType($parameter->type);
                 $parameterDto->schema->pattern = $parameter->pattern;
+                $parameterDto->schema->default = $parameter->defaultValue;
 
                 $endpoint->addParameter($parameterDto);
             }

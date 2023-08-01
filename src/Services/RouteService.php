@@ -51,11 +51,15 @@ readonly class RouteService
                 $routeParameters = array_map(function (ReflectionParameter $parameter) use ($route) {
                     $parameterDto = new RouteParameterDto(
                         $parameter->getName(),
-                        $parameter->getType(),
+                        $parameter->getType()
                     );
 
                     if (isset($route->wheres[$parameter->getName()])) {
                         $parameterDto->pattern = $route->wheres[$parameter->getName()];
+                    }
+
+                    if ($parameter->isOptional()) {
+                        $parameterDto->defaultValue = $parameter->getDefaultValue();
                     }
 
                     return $parameterDto;
