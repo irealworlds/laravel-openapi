@@ -31,6 +31,11 @@ readonly class OpenApiDocumentService
 
         // Add registered documents as paths to the document
         foreach ($this->_routeService->getRegisteredRoutes() as $route) {
+            // If the method is ignored, skip this route.
+            if (in_array(mb_strtolower($route->method), $this->_configuration->get('openapi.ignored_methods'))) {
+                continue;
+            }
+
             $document->addPath(
                 $route->uri,
                 $route->method,
