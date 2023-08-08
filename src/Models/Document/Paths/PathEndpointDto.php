@@ -16,6 +16,7 @@ class PathEndpointDto implements JsonSerializable
         public string|null $summary = null,
         public array $tags = [],
         public array $parameters = [],
+        public mixed $requestBody = null,
         public array $responses = [],
     ) {
     }
@@ -70,6 +71,10 @@ class PathEndpointDto implements JsonSerializable
 
         if (!empty($this->parameters)) {
             $data['parameters'] = $this->parameters;
+        }
+
+        if (!empty($this->requestBody)) {
+            $data['requestBody'] = $this->requestBody;
         }
 
         return $data;

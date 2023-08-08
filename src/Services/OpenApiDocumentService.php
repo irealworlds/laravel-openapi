@@ -3,9 +3,10 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
+use IrealWorlds\OpenApi\Contracts\IExtractorRegistrar;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto, ServerDto};
+use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 use JsonException;
 use ReflectionException;
 
@@ -14,7 +15,7 @@ readonly class OpenApiDocumentService
     public function __construct(
         private ConfigRepository $_configuration,
         private RouteService     $_routeService,
-        private SchemaService    $_schemaService
+        private IExtractorRegistrar $_extractorRegistrar
     ) {
     }
 
@@ -46,30 +47,14 @@ readonly class OpenApiDocumentService
                 continue;
             }
 
-            $endpoint = (new PathEndpointDto())
-                ->addTags(...$route->tags);
+            $extractionContext = $this->_routeService->buildExtractorContextForRoute($route);
+            $this->_extractorRegistrar->setExtractionContext($extractionContext);
 
-            // Add summary
-            $endpoint->summary = $route->summary;
-
-            // Add parameters
-            foreach ($route->parameters as $parameter) {
-                $parameterDto = new EndpointParameterDto(
-                    RouteParameterLocation::Path,
-                    $parameter->name,
-                );
-                $parameterDto->required = !$parameter->type->allowsNull();
-                $parameterDto->schema = $this->_schemaService->createFromType($parameter->type);
-                $parameterDto->schema->pattern = $parameter->pattern;
-                $parameterDto->schema->default = $parameter->defaultValue;
-
-                $endpoint->addParameter($parameterDto);
-            }
-
+            // Add the route to the document
             $document->addPath(
                 $route->uri,
                 $route->method,
-                $endpoint
+                $this->buildPathEndpoint($extractionContext)
             );
         }
 
@@ -77,10 +62,45 @@ readonly class OpenApiDocumentService
     }
 
     /**
+     * Build a path endpoint DTO using the given extraction context.
+     *
+     * @param OpenApiRouteExtractionContext $context
+     * @return PathEndpointDto
+     */
+    protected function buildPathEndpoint(OpenApiRouteExtractionContext $context): PathEndpointDto {
+        $endpoint = (new PathEndpointDto());
+
+        // Extract tags
+        foreach ($this->_extractorRegistrar->getRouteTagsExtractors() as $extractor) {
+            $endpoint->addTags(...$extractor->extract($context));
+        }
+        $endpoint->tags = array_unique($endpoint->tags);
+
+        // Extract the summary
+        foreach ($this->_extractorRegistrar->getRouteSummaryExtractors() as $extractor) {
+            if ($endpoint->summary = $extractor->extract($context)) {
+                break;
+            }
+        }
+
+        // Extract the parameters
+        foreach ($this->_extractorRegistrar->getRouteParametersExtractors() as $extractor) {
+            foreach ($extractor->extract($context) as $parameter) {
+                $endpoint->addParameter($parameter);
+            }
+        }
+
+        return $endpoint;
+    }
+
+    /**
      * @throws JsonException
      */
     public function createJsonDocument(OpenApiDocumentDto $document, string $path): void
     {
-        file_put_contents($path, json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        file_put_contents(
+            $path,
+            json_encode($document, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)
+        );
     }
 }
