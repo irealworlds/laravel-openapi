@@ -4,7 +4,10 @@ namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
-use IrealWorlds\OpenApi\Contracts\Extractors\{IRouteParametersExtractor, IRouteSummaryExtractor, IRouteTagExtractor};
+use IrealWorlds\OpenApi\Contracts\Extractors\{IRequestBodyExtractor,
+    IRouteParametersExtractor,
+    IRouteSummaryExtractor,
+    IRouteTagExtractor};
 use IrealWorlds\OpenApi\Contracts\IExtractorRegistrar;
 use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 
@@ -32,6 +35,13 @@ readonly class ExtractorRegistrar implements IExtractorRegistrar
     private Collection $_registeredRouteParametersExtractors;
 
     /**
+     * A collection of currently registered request body extractors.
+     *
+     * @var Collection<class-string<IRequestBodyExtractor>|IRequestBodyExtractor>
+     */
+    private Collection $_registeredRequestBodyExtractors;
+
+    /**
      * ExtractorRegistrar constructor method.
      *
      * @param Container $_container
@@ -42,6 +52,7 @@ readonly class ExtractorRegistrar implements IExtractorRegistrar
         $this->_registeredRouteTagsExtractors = new Collection();
         $this->_registeredRouteSummaryExtractors = new Collection();
         $this->_registeredRouteParametersExtractors = new Collection();
+        $this->_registeredRequestBodyExtractors = new Collection();
     }
 
     /** @inheritDoc */
@@ -96,6 +107,24 @@ readonly class ExtractorRegistrar implements IExtractorRegistrar
     /** @inheritDoc */
     public function getRouteParametersExtractors(): Collection {
         return $this->_registeredRouteParametersExtractors->map(function ($extractor) {
+            // If the extractor was passed as a class string, instantiate it
+            if (is_string($extractor)) {
+                $extractor = $this->_container->make($extractor);
+            }
+            return $extractor;
+        });
+    }
+
+    /** @inheritDoc */
+    public function registerRequestBodyExtractor(string|IRequestBodyExtractor $extractor): void
+    {
+        $this->_registeredRequestBodyExtractors
+            ->prepend($extractor);
+    }
+
+    /** @inheritDoc */
+    public function getRequestBodyExtractors(): Collection {
+        return $this->_registeredRequestBodyExtractors->map(function ($extractor) {
             // If the extractor was passed as a class string, instantiate it
             if (is_string($extractor)) {
                 $extractor = $this->_container->make($extractor);

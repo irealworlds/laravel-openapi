@@ -3,7 +3,10 @@
 namespace IrealWorlds\OpenApi\Contracts;
 
 use Illuminate\Support\Collection;
-use IrealWorlds\OpenApi\Contracts\Extractors\{IRouteParametersExtractor, IRouteSummaryExtractor, IRouteTagExtractor};
+use IrealWorlds\OpenApi\Contracts\Extractors\{IRequestBodyExtractor,
+    IRouteParametersExtractor,
+    IRouteSummaryExtractor,
+    IRouteTagExtractor};
 use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 
 interface IExtractorRegistrar
@@ -63,4 +66,20 @@ interface IExtractorRegistrar
      * @return Collection<IRouteParametersExtractor>
      */
     public function getRouteParametersExtractors(): Collection;
+
+    /**
+     * Register a new request body extractor.
+     *
+     * @template TExtractor of IRequestBodyExtractor
+     * @param class-string<TExtractor>|IRequestBodyExtractor $extractor
+     * @return void
+     */
+    public function registerRequestBodyExtractor(string|IRequestBodyExtractor $extractor): void;
+
+    /**
+     * Get a list of registered request body extractors.
+     *
+     * @return Collection<IRequestBodyExtractor>
+     */
+    public function getRequestBodyExtractors(): Collection;
 }
