@@ -2,7 +2,9 @@
 
 namespace IrealWorlds\OpenApi\Models\Document;
 
-readonly class ServerDto implements \JsonSerializable
+use JsonSerializable;
+
+readonly class ServerDto implements JsonSerializable
 {
     public function __construct(
         public string      $url,
