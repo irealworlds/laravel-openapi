@@ -2,8 +2,19 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Schema;
 
-class SchemaPropertyDto implements \JsonSerializable
+use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
+use JsonSerializable;
+
+class SchemaPropertyDto implements ISchemaProperty, JsonSerializable
 {
+    /**
+     * @param string $type
+     * @param string|null $format
+     * @param bool|null $nullable
+     * @param mixed|null $default
+     * @param string|null $pattern
+     * @see https://swagger.io/docs/specification/data-models/data-types/
+     */
     public function __construct(
         public string $type,
         public ?string $format = null,
