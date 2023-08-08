@@ -6,6 +6,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use IrealWorlds\OpenApi\Contracts\IExtractorRegistrar;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto, ServerDto};
+use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 use JsonException;
 use ReflectionException;
 
@@ -46,41 +47,50 @@ readonly class OpenApiDocumentService
                 continue;
             }
 
-            $extractionContext = $this->_routeService->getExtractorContextForRoute($route);
+            $extractionContext = $this->_routeService->buildExtractorContextForRoute($route);
             $this->_extractorRegistrar->setExtractionContext($extractionContext);
-
-
-            $endpoint = (new PathEndpointDto());
-
-            // Extract tags
-            foreach ($this->_extractorRegistrar->getRouteTagsExtractors() as $extractor) {
-                $endpoint->addTags(...$extractor->extract());
-            }
-            $endpoint->tags = array_unique($endpoint->tags);
-
-            // Extract the summary
-            foreach ($this->_extractorRegistrar->getRouteSummaryExtractors() as $extractor) {
-                if ($endpoint->summary = $extractor->extract()) {
-                    break;
-                }
-            }
-
-            // Extract the parameters
-            foreach ($this->_extractorRegistrar->getRouteParametersExtractors() as $extractor) {
-                foreach ($extractor->extract() as $parameter) {
-                    $endpoint->addParameter($parameter);
-                }
-            }
 
             // Add the route to the document
             $document->addPath(
                 $route->uri,
                 $route->method,
-                $endpoint
+                $this->buildPathEndpoint($extractionContext)
             );
         }
 
         return $document;
+    }
+
+    /**
+     * Build a path endpoint DTO using the given extraction context.
+     *
+     * @param OpenApiRouteExtractionContext $context
+     * @return PathEndpointDto
+     */
+    protected function buildPathEndpoint(OpenApiRouteExtractionContext $context): PathEndpointDto {
+        $endpoint = (new PathEndpointDto());
+
+        // Extract tags
+        foreach ($this->_extractorRegistrar->getRouteTagsExtractors() as $extractor) {
+            $endpoint->addTags(...$extractor->extract($context));
+        }
+        $endpoint->tags = array_unique($endpoint->tags);
+
+        // Extract the summary
+        foreach ($this->_extractorRegistrar->getRouteSummaryExtractors() as $extractor) {
+            if ($endpoint->summary = $extractor->extract($context)) {
+                break;
+            }
+        }
+
+        // Extract the parameters
+        foreach ($this->_extractorRegistrar->getRouteParametersExtractors() as $extractor) {
+            foreach ($extractor->extract($context) as $parameter) {
+                $endpoint->addParameter($parameter);
+            }
+        }
+
+        return $endpoint;
     }
 
     /**

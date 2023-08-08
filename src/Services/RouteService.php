@@ -102,7 +102,7 @@ readonly class RouteService
      * @return OpenApiRouteExtractionContext
      * @throws ReflectionException
      */
-    public function getExtractorContextForRoute(RegisteredRouteDto $route): OpenApiRouteExtractionContext
+    public function buildExtractorContextForRoute(RegisteredRouteDto $route): OpenApiRouteExtractionContext
     {
         return new OpenApiRouteExtractionContext(
             route: $route,

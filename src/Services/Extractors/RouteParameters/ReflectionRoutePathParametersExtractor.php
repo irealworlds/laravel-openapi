@@ -13,35 +13,32 @@ use ReflectionParameter;
 /**
  * Extract the parameters that should be present in the path, using reflection.
  */
-class ReflectionRoutePathParametersExtractor implements IRouteParametersExtractor
+readonly class ReflectionRoutePathParametersExtractor implements IRouteParametersExtractor
 {
-    private readonly OpenApiRouteExtractionContext $_context;
-    private readonly SchemaService $_schemaService;
+    private SchemaService $_schemaService;
 
     public function __construct(
-        OpenApiRouteExtractionContext $context,
         SchemaService $schemaService
     ) {
         $this->_schemaService = $schemaService;
-        $this->_context = $context;
     }
 
     /**
      * @inheritDoc
      */
-    public function extract(): Collection
+    public function extract(OpenApiRouteExtractionContext $context): Collection
     {
-        if ($reflection = $this->_context->action) {
+        if ($reflection = $context->action) {
             // Extract parameters defined in the action
             $parameters = $reflection->getParameters();
 
             // Extract only parameters that are defined in the route
             $pattern = '/\/{([a-zA-Z_]+)(\??)}/';
             $matches = [];
-            preg_match_all($pattern, $this->_context->route->uri, $matches);
+            preg_match_all($pattern, $context->route->uri, $matches);
             return (new Collection($parameters))
                 ->filter(fn(ReflectionParameter $parameter) => in_array($parameter->getName(), $matches[1]))
-                ->map(function (ReflectionParameter $parameter) {
+                ->map(function (ReflectionParameter $parameter) use ($context) {
                     $parameterDto = new EndpointParameterDto(
                         in: RouteParameterLocation::Path,
                         name: $parameter->getName(),
@@ -50,8 +47,8 @@ class ReflectionRoutePathParametersExtractor implements IRouteParametersExtracto
                     $parameterDto->required = !$parameter->getType()->allowsNull();
                     $parameterDto->schema = $this->_schemaService->createFromType($parameter->getType());
 
-                    if (isset($this->_context->route->routeDefinition->wheres[$parameter->getName()])) {
-                        $parameterDto->schema->pattern = $this->_context->route
+                    if (isset($context->route->routeDefinition->wheres[$parameter->getName()])) {
+                        $parameterDto->schema->pattern = $context->route
                             ->routeDefinition
                             ->wheres[$parameter->getName()];
                     }

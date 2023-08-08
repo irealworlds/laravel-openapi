@@ -15,11 +15,9 @@ readonly class ControllerNameRouteTagExtractor implements IRouteTagExtractor
     /**
      * ControllerNameRouteTagExtractor constructor method.
      *
-     * @param OpenApiRouteExtractionContext $_context
      * @param RouteService $_routeService
      */
     public function __construct(
-        private OpenApiRouteExtractionContext $_context,
         private RouteService                  $_routeService
     ) {
     }
@@ -27,10 +25,10 @@ readonly class ControllerNameRouteTagExtractor implements IRouteTagExtractor
     /**
      * @inheritDoc
      */
-    public function extract(): Collection
+    public function extract(OpenApiRouteExtractionContext $context): Collection
     {
-        if ($this->_context->route) {
-            $controller = $this->_routeService->getControllerForRoute($this->_context->route->routeDefinition);
+        if ($context->route) {
+            $controller = $this->_routeService->getControllerForRoute($context->route->routeDefinition);
             if ($controller) {
                 return new Collection([$controller]);
             }

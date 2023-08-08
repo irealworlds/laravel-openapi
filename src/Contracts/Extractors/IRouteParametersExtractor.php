@@ -4,6 +4,7 @@ namespace IrealWorlds\OpenApi\Contracts\Extractors;
 
 use Illuminate\Support\Collection;
 use IrealWorlds\OpenApi\Models\Document\Paths\EndpointParameterDto;
+use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 
 interface IRouteParametersExtractor
 {
@@ -12,7 +13,8 @@ interface IRouteParametersExtractor
      *
      * @note Only parameters that should be present in the PATH, QUERY, HEADERS or COOKIES should be extracted.
      * @see https://swagger.io/docs/specification/describing-parameters/
+     * @param OpenApiRouteExtractionContext $context
      * @return Collection<EndpointParameterDto>
      */
-    public function extract(): Collection;
+    public function extract(OpenApiRouteExtractionContext $context): Collection;
 }

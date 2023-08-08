@@ -11,21 +11,11 @@ use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 class DocBlockRouteSummaryExtractor implements IRouteSummaryExtractor
 {
     /**
-     * DocBlockRouteSummaryExtractor constructor method.
-     *
-     * @param OpenApiRouteExtractionContext $_context
-     */
-    public function __construct(
-        private readonly OpenApiRouteExtractionContext $_context
-    ) {
-    }
-
-    /**
      * @inheritDoc
      */
-    public function extract(): string|null
+    public function extract(OpenApiRouteExtractionContext $context): string|null
     {
-        if ($reflection = $this->_context->action) {
+        if ($reflection = $context->action) {
             $comment = $reflection->getDocComment();
 
             if ($comment !== false) {
