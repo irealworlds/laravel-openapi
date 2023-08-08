@@ -2,12 +2,12 @@
 
 namespace IrealWorlds\OpenApi\Services;
 
+use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
 use IrealWorlds\OpenApi\Models\Document\Schema\{ArraySchemaPropertyDto,
     BooleanSchemaPropertyDto,
     NumericSchemaPropertyDto,
     SchemaPropertyDto,
     StringSchemaPropertyDto};
-use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
 use ReflectionNamedType;
 
 class SchemaService
