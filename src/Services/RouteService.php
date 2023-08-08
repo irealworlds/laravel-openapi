@@ -53,11 +53,9 @@ readonly class RouteService
         if ($controller = $route->getAction('controller')) {
             $controller = explode('@', $controller)[0];
             return last(explode('\\', $controller));
-        } else if (isset($action[0])) {
-            if (is_string($action[0])) {
-                $controller = $action[0];
-                return last(explode('\\', $controller));
-            }
+        } else if (isset($action[0]) && is_string($action[0])) {
+            $controller = $action[0];
+            return last(explode('\\', $controller));
         }
 
         return null;
@@ -80,15 +78,11 @@ readonly class RouteService
             if ($action instanceof Closure) {
                 return new ReflectionFunction($action);
             }
-        } else if ($action = $route->getAction()) {
-            if (isset($action[0])) {
-                $controller = $action[0];
-                if (class_exists($controller)) {
-                    if (method_exists($controller, "__invoke")) {
-                        $classReflection = new ReflectionClass($controller);
-                        return $classReflection->getMethod("__invoke");
-                    }
-                }
+        } else if (($action = $route->getAction()) && isset($action[0])) {
+            $controller = $action[0];
+            if (class_exists($controller) && method_exists($controller, "__invoke")) {
+                $classReflection = new ReflectionClass($controller);
+                return $classReflection->getMethod("__invoke");
             }
         }
 
