@@ -7,47 +7,50 @@ use IrealWorlds\OpenApi\Models\Document\Schema\{ArraySchemaPropertyDto,
     NumericSchemaPropertyDto,
     SchemaPropertyDto,
     StringSchemaPropertyDto};
+use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
 use ReflectionNamedType;
-use ReflectionType;
 
 class SchemaService
 {
-    public function createFromType(ReflectionType $type): SchemaPropertyDto {
-        $output = new SchemaPropertyDto("string", "custom");
+    /**
+     * Create a new schema property from a reflection type.
+     *
+     * @param ReflectionNamedType $type
+     * @return ISchemaProperty
+     */
+    public function createFromType(ReflectionNamedType $type): ISchemaProperty {
 
         // Try to figure out the type this parameter should have
-        if ($type instanceof ReflectionNamedType) {
-            switch ($type->getName()) {
-                case "int": {
-                    $output = new NumericSchemaPropertyDto(
-                        type: 'integer',
-                        format: 'int32'
-                    );
-                    break;
-                }
-                case "float": {
-                    $output = new NumericSchemaPropertyDto(
-                        type: 'number',
-                        format: 'float'
-                    );
-                    break;
-                }
-                case "string": {
-                    $output = new StringSchemaPropertyDto();
-                    break;
-                }
-                case "bool": {
-                    $output = new BooleanSchemaPropertyDto();
-                    break;
-                }
-                case "array": {
-                    $output = new ArraySchemaPropertyDto();
-                    break;
-                }
-                default: {
-                    $output = new SchemaPropertyDto("string", "custom");
-                    break;
-                }
+        switch ($type->getName()) {
+            case "int": {
+                $output = new NumericSchemaPropertyDto(
+                    type: 'integer',
+                    format: 'int32'
+                );
+                break;
+            }
+            case "float": {
+                $output = new NumericSchemaPropertyDto(
+                    type: 'number',
+                    format: 'float'
+                );
+                break;
+            }
+            case "string": {
+                $output = new StringSchemaPropertyDto();
+                break;
+            }
+            case "bool": {
+                $output = new BooleanSchemaPropertyDto();
+                break;
+            }
+            case "array": {
+                $output = new ArraySchemaPropertyDto();
+                break;
+            }
+            default: {
+                $output = new SchemaPropertyDto("string", "custom");
+                break;
             }
         }
 

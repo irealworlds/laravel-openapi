@@ -2,9 +2,10 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Schema;
 
+use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
 use JsonSerializable;
 
-class SchemaPropertyDto implements JsonSerializable
+class SchemaPropertyDto implements ISchemaProperty, JsonSerializable
 {
     /**
      * @param string $type
