@@ -3,9 +3,7 @@
 namespace IrealWorlds\OpenApi\Services;
 
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
-use IrealWorlds\OpenApi\Contracts\Extractors\IRouteSummaryExtractor;
 use IrealWorlds\OpenApi\Contracts\IExtractorRegistrar;
-use IrealWorlds\OpenApi\Enums\RouteParameterLocation;
 use IrealWorlds\OpenApi\Models\Document\Paths\PathEndpointDto;
 use IrealWorlds\OpenApi\Models\Document\{ApplicationInfoDto, OpenApiDocumentDto, Paths\EndpointParameterDto, ServerDto};
 use JsonException;

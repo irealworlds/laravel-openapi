@@ -8,7 +8,6 @@ use IrealWorlds\OpenApi\Models\OpenApiRouteExtractionContext;
 
 interface IExtractorRegistrar
 {
-
     /**
      * Set a new route extraction context.
      *
@@ -25,6 +24,7 @@ interface IExtractorRegistrar
      * @return void
      */
     public function registerRouteTagsExtractor(string|IRouteTagExtractor $extractor): void;
+
     /**
      * Get a list of registered route tags extractors.
      *

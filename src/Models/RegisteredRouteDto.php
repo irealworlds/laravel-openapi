@@ -3,8 +3,6 @@
 namespace IrealWorlds\OpenApi\Models;
 
 use Illuminate\Routing\Route;
-use ReflectionFunction;
-use ReflectionMethod;
 
 readonly class RegisteredRouteDto
 {
