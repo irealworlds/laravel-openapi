@@ -5,8 +5,8 @@ namespace IrealWorlds\OpenApi\Models\Document\Schema;
 class NumericSchemaPropertyDto extends SchemaPropertyDto
 {
     /**
-     * @param string $type
-     * @param string|null $format
+     * @param 'number'|'integer' $type
+     * @param 'int32'|'int64'|'float'|'double'|null $format
      * @param bool|null $nullable
      * @param int|float|null $default
      * @param string|null $pattern

@@ -4,6 +4,16 @@ namespace IrealWorlds\OpenApi\Models\Document\Schema;
 
 class ArraySchemaPropertyDto extends SchemaPropertyDto
 {
+    /**
+     * @param array $items
+     * @param string|null $format
+     * @param bool|null $nullable
+     * @param mixed|null $default
+     * @param string|null $pattern
+     * @param int|null $minItems
+     * @param int|null $maxItems
+     * @param bool|null $uniqueItems
+     */
     public function __construct(
         public array $items = [],
         ?string $format = null,
