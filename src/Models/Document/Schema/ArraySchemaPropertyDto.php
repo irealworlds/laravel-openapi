@@ -2,10 +2,12 @@
 
 namespace IrealWorlds\OpenApi\Models\Document\Schema;
 
+use IrealWorlds\OpenApi\Contracts\ISchemaProperty;
+
 class ArraySchemaPropertyDto extends SchemaPropertyDto
 {
     /**
-     * @param array $items
+     * @param ISchemaProperty $items
      * @param string|null $format
      * @param bool|null $nullable
      * @param mixed|null $default
@@ -15,7 +17,7 @@ class ArraySchemaPropertyDto extends SchemaPropertyDto
      * @param bool|null $uniqueItems
      */
     public function __construct(
-        public array $items = [],
+        public ISchemaProperty $items,
         ?string $format = null,
         ?bool $nullable = null,
         mixed $default = null,
@@ -31,7 +33,7 @@ class ArraySchemaPropertyDto extends SchemaPropertyDto
     {
         $data = [
             'type' => $this->type,
-            'items' => $this->items,
+            'items' => (object) $this->items,
         ];
 
         foreach (['minItems', 'maxItems', 'uniqueItems'] as $property) {

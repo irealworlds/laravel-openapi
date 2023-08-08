@@ -45,7 +45,9 @@ class SchemaService
                 break;
             }
             case "array": {
-                $output = new ArraySchemaPropertyDto();
+                $output = new ArraySchemaPropertyDto(
+                    new SchemaPropertyDto("string", "custom")
+                );
                 break;
             }
             default: {
